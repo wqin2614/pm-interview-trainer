@@ -1,5 +1,6 @@
 import { View, Text } from '@tarojs/components';
 import { useState } from 'react';
+import Taro from '@tarojs/taro';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -69,7 +70,11 @@ const IndexPage = () => {
 
   // 开始答题
   const handleStartAnswer = () => {
-    console.log('开始答题', selectedQuestion);
+    if (selectedQuestion) {
+      Taro.navigateTo({
+        url: '/pages/interview/index'
+      });
+    }
   };
 
   return (
