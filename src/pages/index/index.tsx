@@ -1,30 +1,99 @@
-import { View, Text, Image } from '@tarojs/components';
-import { useLoad } from '@tarojs/taro';
-import { Network } from '@/network';
-import './index.css';
+import { View, Text } from '@tarojs/components';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { BookOpen, Shuffle, Mic, History } from 'lucide-react-taro';
 
 /**
- * 默认首页，直接覆盖本页内容
+ * 产品面试练习工具首页
  */
 const IndexPage = () => {
-  useLoad(async () => {
-    const res = await Network.request({ url: '/api/hello' });
-    console.log(res.data);
-  });
-
   return (
-    <View className="w-full h-full flex flex-col justify-center items-center gap-1">
-      <Image
-        className="w-32 h-28"
-        src="https://lf-coze-web-cdn.coze.cn/obj/eden-cn/lm-lgvj/ljhwZthlaukjlkulzlp/coze-coding/icon/coze-coding.gif"
-      />
-      <View className="self-stretch flex flex-col justify-start items-start gap-2">
-        <Text className="self-stretch text-center justify-start text-base-accent-foreground text-base font-bold">
-          应用开发中
+    <View className="w-full min-h-full bg-background p-4">
+      <View className="mb-8">
+        <Text className="block text-2xl font-bold text-on-surface mb-2">
+          面试练习
         </Text>
-        <Text className="self-stretch text-center justify-start text-base-muted-foreground text-sm font-normal">
-          请稍候，界面即将呈现
+        <Text className="block text-sm text-on-surface-variant">
+          准备产品经理面试，从这里开始
         </Text>
+      </View>
+
+      <View className="flex flex-col gap-4">
+        <Card className="bg-surface-container-lowest">
+          <CardHeader className="pb-2">
+            <View className="flex items-center gap-3">
+              <BookOpen size={24} color="#C96F3D" />
+              <CardTitle className="text-lg font-semibold text-on-surface">
+                题库学习
+              </CardTitle>
+            </View>
+          </CardHeader>
+          <CardContent>
+            <Text className="block text-sm text-on-surface-variant mb-4">
+              按类别浏览面试题目，查看参考答案和答题建议
+            </Text>
+            <Button className="w-full bg-primary text-on-primary">
+              <Text>开始学习</Text>
+            </Button>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-surface-container-lowest">
+          <CardHeader className="pb-2">
+            <View className="flex items-center gap-3">
+              <Shuffle size={24} color="#C96F3D" />
+              <CardTitle className="text-lg font-semibold text-on-surface">
+                随机练习
+              </CardTitle>
+            </View>
+          </CardHeader>
+          <CardContent>
+            <Text className="block text-sm text-on-surface-variant mb-4">
+              老虎机随机抽题，体验真实面试场景
+            </Text>
+            <Button className="w-full bg-primary text-on-primary">
+              <Text>随机抽题</Text>
+            </Button>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-surface-container-lowest">
+          <CardHeader className="pb-2">
+            <View className="flex items-center gap-3">
+              <Mic size={24} color="#C96F3D" />
+              <CardTitle className="text-lg font-semibold text-on-surface">
+                模拟面试
+              </CardTitle>
+            </View>
+          </CardHeader>
+          <CardContent>
+            <Text className="block text-sm text-on-surface-variant mb-4">
+              倒计时答题，录音分析，智能建议
+            </Text>
+            <Button className="w-full bg-primary text-on-primary">
+              <Text>开始面试</Text>
+            </Button>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-surface-container-lowest">
+          <CardHeader className="pb-2">
+            <View className="flex items-center gap-3">
+              <History size={24} color="#C96F3D" />
+              <CardTitle className="text-lg font-semibold text-on-surface">
+                历史记录
+              </CardTitle>
+            </View>
+          </CardHeader>
+          <CardContent>
+            <Text className="block text-sm text-on-surface-variant mb-4">
+              查看练习记录，复盘面试表现
+            </Text>
+            <Button className="w-full bg-primary text-on-primary">
+              <Text>查看记录</Text>
+            </Button>
+          </CardContent>
+        </Card>
       </View>
     </View>
   );
