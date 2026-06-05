@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+
+  <!-- 字体 -->
+  <link href="https://lf-code-agent.coze.cn/obj/x-ai-cn/fonts/google/google-all-fonts.css" rel="stylesheet"/>
+
+  <script src="https://lf-code-agent.coze.cn/obj/x-ai-cn/cdn/jquery/jquery-3.7.1.min.js"></script>
+  <script src="https://lf-code-agent.coze.cn/obj/x-ai-cn/cdn/lucide/lucide-1.11.0.min.js"></script>
+  <script src="https://lf-code-agent.coze.cn/obj/x-ai-cn/cdn/tailwindcss/tailwindcss-browser-4.2.4.min.js"></script>
+
+  <style type="text/tailwindcss">
+    @theme {
+      /* === 品牌色 === */
+      --color-primary:              #C96F3D;
+      --color-primary-container:    #FFF9F1;
+      --color-on-primary:           #ffffff;
+      /* === 背景 / 表面（纸感风） === */
+      --color-background:                 #FBF3E7;
+      --color-surface-container-lowest:   #FFF9F1;
+      --color-surface:                    #FBF3E7;
+      --color-surface-container:          #FFF9F1;
+      --color-surface-container-high:     #F5EDE3;
+      --color-surface-container-highest:  #EDE5DA;
+      /* === 文字 === */
+      --color-on-surface:           #31251B;
+      --color-on-surface-variant:   #8B7662;
+      /* === 功能色 === */
+      --color-success:  #7E9F7A;
+      --color-error:    #D9534F;
+      --color-warning:  #F0AD4E;
+      /* === 边框 === */
+      --color-outline:          #8B7662;
+      --color-outline-variant:  #D4C9BC;
+      /* === 圆角 === */
+      --radius-sm:   0.25rem;
+      --radius-md:   0.5rem;
+      --radius-lg:   0.75rem;
+      --radius-xl:   1rem;
+      --radius-2xl:  1.5rem;
+      --radius-full: 9999px;
+      /* === 阴影 === */
+      --shadow-card:   0 2px 8px rgba(49, 37, 27, 0.08);
+      --shadow-float:  0 4px 16px rgba(49, 37, 27, 0.12);
+      --shadow-dialog: 0 8px 32px rgba(49, 37, 27, 0.16);
+      /* === 字体 === */
+      --font-sans: "Georgia", "Noto Serif SC", system-ui, serif;
+    }
+  </style>
+
+  <style>
+    body {
+      min-height: max(812px, 100dvh);
+      font-family: var(--font-sans);
+    }
+  </style>
+
+  <!-- 图片兜底 -->
+  <script>
+    document.addEventListener('error', function (e) {
+      const img = e.target;
+      if (img.tagName !== 'IMG' || img.dataset.fallback) return;
+      img.dataset.fallback = '1';
+      const esc = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+      const cat = img.getAttribute('data-category') || '其他';
+      const alt = img.getAttribute('alt') || '';
+      const label = esc(alt.length > 8 ? alt.slice(0, 8) + '…' : alt);
+      const icons = { '人物': '👤', '自然风景': '🏞', '动物': '🐾', '建筑城市': '🏙', '运动体育': '⚽', '交通工具': '🚗', '食物': '🍽', '服饰时尚': '👗', '商业科技': '💼', '游戏娱乐': '🎮', '艺术': '🎨', '其他': '🖼' };
+      const icon = icons[cat] || '🖼';
+      const w = img.width || 400, h = img.height || 300;
+      const svg = '<svg xmlns="http://www.w3.org/2000/svg" width="' + w + '" height="' + h + '"><rect width="100%" height="100%" fill="%23f3f4f6"/><text x="50%" y="45%" text-anchor="middle" font-size="' + Math.min(w, h) * 0.18 + '" dominant-baseline="central">' + icon + '</text><text x="50%" y="68%" text-anchor="middle" font-size="' + Math.min(w, h) * 0.07 + '" fill="%239ca3af" font-family="system-ui,sans-serif" dominant-baseline="central">' + label + '</text></svg>';
+      img.src = 'data:image/svg+xml,' + svg;
+    }, true);
+  </script>
+</head>
+
+<body class="bg-background text-on-surface font-sans">
+
+  <!-- 顶部 Header（二级页加返回按钮） -->
+  <header class="bg-background sticky top-0 z-40 h-14 flex items-center justify-between px-4">
+    <button id="btn-back" class="w-10 h-10 flex items-center justify-center text-on-surface-variant rounded-full
+                   hover:bg-surface-container active:bg-surface-container-high transition-colors">
+      <i data-lucide="arrow-left" class="w-5 h-5"></i>
+    </button>
+    <h1 class="text-base font-semibold text-on-surface">面试详情</h1>
+    <button id="btn-more" class="w-10 h-10 flex items-center justify-center text-on-surface-variant rounded-full
+                   hover:bg-surface-container transition-colors">
+      <i data-lucide="ellipsis-vertical" class="w-5 h-5"></i>
+    </button>
+  </header>
+
+  <main class="overflow-y-auto pb-[env(safe-area-inset-bottom)]">
+    <!-- @main-content:start -->
+    
+    <!-- 面试题目卡片 -->
+    <div class="bg-surface rounded-xl shadow-card mx-4 mt-4 p-4">
+      <div class="flex items-start gap-3">
+        <div class="w-10 h-10 bg-primary/15 rounded-full flex items-center justify-center flex-shrink-0">
+          <i data-lucide="message-square" class="w-5 h-5 text-primary"></i>
+        </div>
+        <div class="flex-1">
+          <h2 class="text-base font-semibold text-on-surface">请自我介绍一下</h2>
+          <div class="flex items-center gap-4 mt-2">
+            <div class="flex items-center gap-1">
+              <i data-lucide="clock" class="w-4 h-4 text-on-surface-variant"></i>
+              <span class="text-xs text-on-surface-variant">用时 2分45秒</span>
+            </div>
+            <div class="flex items-center gap-1">
+              <i data-lucide="calendar" class="w-4 h-4 text-on-surface-variant"></i>
+              <span class="text-xs text-on-surface-variant">2024-01-15 14:30</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 录音回放区域 -->
+    <div class="bg-surface rounded-xl shadow-card mx-4 mt-4 p-4">
+      <h3 class="text-sm font-semibold text-on-surface mb-3">录音回放</h3>
+      <div class="bg-surface-container rounded-xl p-4">
+        <div class="flex items-center gap-4">
+          <button id="btn-play" class="w-12 h-12 bg-primary text-on-primary rounded-full flex items-center justify-center flex-shrink-0 hover:opacity-90 active:scale-[0.98] transition-all">
+            <i data-lucide="play" class="w-5 h-5 ml-0.5"></i>
+          </button>
+          <div class="flex-1">
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-xs text-on-surface-variant">0:00</span>
+              <span class="text-xs text-on-surface-variant">2:45</span>
+            </div>
+            <div class="h-2 bg-surface-container-high rounded-full overflow-hidden">
+              <div class="h-full bg-primary rounded-full" style="width: 60%"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 语音转写文本 -->
+    <div class="bg-surface rounded-xl shadow-card mx-4 mt-4 p-4">
+      <h3 class="text-sm font-semibold text-on-surface mb-3">语音转写</h3>
+      <div class="bg-surface-container rounded-xl p-4">
+        <p class="text-sm text-on-surface leading-relaxed">
+          您好，我叫张三，毕业于北京大学计算机科学专业，有3年的前端开发经验。我之前在百度工作，主要负责用户界面开发和性能优化。我熟悉React、Vue等主流框架，对TypeScript也有深入了解。在过去的项目中，我成功优化了首页加载速度，提升了用户体验。我希望能够加入贵公司，贡献我的技术能力。
+        </p>
+      </div>
+    </div>
+
+    <!-- 语音分析报告 -->
+    <div class="bg-surface rounded-xl shadow-card mx-4 mt-4 p-4">
+      <h3 class="text-sm font-semibold text-on-surface mb-3">语音分析报告</h3>
+      
+      <!-- 语速统计 -->
+      <div class="mb-4">
+        <h4 class="text-xs font-semibold text-on-surface-variant mb-2">语速统计</h4>
+        <div class="bg-surface-container rounded-xl p-4">
+          <div class="flex items-center justify-between">
+            <div class="text-center">
+              <p class="text-2xl font-bold text-primary">156</p>
+              <p class="text-xs text-on-surface-variant mt-1">字/分钟</p>
+            </div>
+            <div class="text-center">
+              <p class="text-2xl font-bold text-success">正常</p>
+              <p class="text-xs text-on-surface-variant mt-1">语速评级</p>
+            </div>
+            <div class="text-center">
+              <p class="text-2xl font-bold text-on-surface">2:45</p>
+              <p class="text-xs text-on-surface-variant mt-1">总时长</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 语言习惯分析 -->
+      <div class="mb-4">
+        <h4 class="text-xs font-semibold text-on-surface-variant mb-2">语言习惯分析</h4>
+        <div class="bg-surface-container rounded-xl p-4">
+          <div class="space-y-3">
+            <!-- 分析项1 -->
+            <div class="flex items-center justify-between">
+              <span class="text-sm text-on-surface">停顿词使用</span>
+              <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-warning/15 text-warning">需改进</span>
+            </div>
+            <p class="text-xs text-on-surface-variant">检测到"那个"、"然后"等停顿词共8次，建议减少使用</p>
+            
+            <!-- 分析项2 -->
+            <div class="flex items-center justify-between mt-3">
+              <span class="text-sm text-on-surface">表达清晰度</span>
+              <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-success/15 text-success">良好</span>
+            </div>
+            <p class="text-xs text-on-surface-variant">逻辑连贯，层次分明，表达清晰</p>
+            
+            <!-- 分析项3 -->
+            <div class="flex items-center justify-between mt-3">
+              <span class="text-sm text-on-surface">音量稳定性</span>
+              <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-success/15 text-success">优秀</span>
+            </div>
+            <p class="text-xs text-on-surface-variant">音量适中且稳定，发音清晰</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- 表达建议 -->
+      <div>
+        <h4 class="text-xs font-semibold text-on-surface-variant mb-2">表达建议</h4>
+        <div class="bg-surface-container rounded-xl p-4">
+          <ul class="space-y-2">
+            <li class="flex items-start gap-2">
+              <i data-lucide="lightbulb" class="w-4 h-4 text-primary mt-0.5 flex-shrink-0"></i>
+              <span class="text-sm text-on-surface">减少停顿词的使用，可通过短暂停顿替代</span>
+            </li>
+            <li class="flex items-start gap-2">
+              <i data-lucide="lightbulb" class="w-4 h-4 text-primary mt-0.5 flex-shrink-0"></i>
+              <span class="text-sm text-on-surface">自我介绍可增加具体项目案例和数据支撑</span>
+            </li>
+            <li class="flex items-start gap-2">
+              <i data-lucide="lightbulb" class="w-4 h-4 text-primary mt-0.5 flex-shrink-0"></i>
+              <span class="text-sm text-on-surface">结尾部分可更突出与岗位的匹配度</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- 操作按钮区域 -->
+    <div class="mx-4 mt-6 mb-8 space-y-3">
+      <button id="btn-retry" class="w-full bg-primary text-on-primary py-3.5 rounded-xl text-base font-semibold
+               hover:opacity-90 active:scale-[0.98] transition-all inline-flex items-center justify-center gap-2">
+        <i data-lucide="refresh-ccw" class="w-5 h-5"></i>重新练习
+      </button>
+      <button id="btn-delete" class="w-full bg-surface-container text-error border-none py-3.5 rounded-xl text-base font-semibold
+               hover:bg-surface-container-high active:scale-[0.98] transition-all inline-flex items-center justify-center gap-2">
+        <i data-lucide="trash-2" class="w-5 h-5"></i>删除记录
+      </button>
+    </div>
+
+    <!-- @main-content:end -->
+  </main>
+
+  <script>
+    // 导航辅助函数
+    function navPush(route) {
+        console.log('[原型演示] PUSH 到: ' + route);
+        window.location.href = route;
+    }
+
+    function navReplace(route) {
+        console.log('[原型演示] REPLACE 为: ' + route);
+        window.location.replace(route);
+    }
+
+    function navReset(route) {
+        console.log('[原型演示] RESET 到: ' + route);
+        window.location.href = route;
+    }
+
+    function navBack() {
+        console.log('[原型演示] BACK 返回上一页');
+        if(window.history.length > 1) window.history.back();
+    }
+
+    $(function() {
+      // 返回按钮
+      $('#btn-back').on('click', function() {
+        navBack();
+      });
+
+      // 更多选项按钮
+      $('#btn-more').on('click', function() {
+        console.log('更多选项');
+      });
+
+      // 播放按钮
+      $('#btn-play').on('click', function() {
+        const $icon = $(this).find('i');
+        if ($icon.attr('data-lucide') === 'play') {
+          $icon.attr('data-lucide', 'pause');
+          console.log('开始播放录音');
+        } else {
+          $icon.attr('data-lucide', 'play');
+          console.log('暂停播放录音');
+        }
+        lucide.createIcons();
+      });
+
+      // 重新练习按钮
+      $('#btn-retry').on('click', function() {
+        console.log('重新练习');
+        navPush('interview.html');
+      });
+
+      // 删除记录按钮
+      $('#btn-delete').on('click', function() {
+        console.log('删除记录');
+        if (confirm('确定要删除这条记录吗？')) {
+          navPush('history.html');
+        }
+      });
+    });
+  </script>
+
+  <script>lucide.createIcons();</script>
+</body>
+
+</html>

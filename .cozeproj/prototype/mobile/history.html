@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+
+  <!-- 字体 -->
+  <link href="https://lf-code-agent.coze.cn/obj/x-ai-cn/fonts/google/google-all-fonts.css" rel="stylesheet"/>
+
+  <script src="https://lf-code-agent.coze.cn/obj/x-ai-cn/cdn/jquery/jquery-3.7.1.min.js"></script>
+  <script src="https://lf-code-agent.coze.cn/obj/x-ai-cn/cdn/lucide/lucide-1.11.0.min.js"></script>
+  <script src="https://lf-code-agent.coze.cn/obj/x-ai-cn/cdn/tailwindcss/tailwindcss-browser-4.2.4.min.js"></script>
+
+  <style type="text/tailwindcss">
+    @theme {
+      /* === 品牌色 === */
+      --color-primary:              #C96F3D;
+      --color-primary-container:    #FFF9F1;
+      --color-on-primary:           #ffffff;
+      /* === 背景 / 表面（纸感风） === */
+      --color-background:                 #FBF3E7;
+      --color-surface-container-lowest:   #FFF9F1;
+      --color-surface:                    #FBF3E7;
+      --color-surface-container:          #FFF9F1;
+      --color-surface-container-high:     #F5EDE3;
+      --color-surface-container-highest:  #EDE5DA;
+      /* === 文字 === */
+      --color-on-surface:           #31251B;
+      --color-on-surface-variant:   #8B7662;
+      /* === 功能色 === */
+      --color-success:  #7E9F7A;
+      --color-error:    #D9534F;
+      --color-warning:  #F0AD4E;
+      /* === 边框 === */
+      --color-outline:          #8B7662;
+      --color-outline-variant:  #D4C9BC;
+      /* === 圆角 === */
+      --radius-sm:   0.25rem;
+      --radius-md:   0.5rem;
+      --radius-lg:   0.75rem;
+      --radius-xl:   1rem;
+      --radius-2xl:  1.5rem;
+      --radius-full: 9999px;
+      /* === 阴影 === */
+      --shadow-card:   0 2px 8px rgba(49, 37, 27, 0.08);
+      --shadow-float:  0 4px 16px rgba(49, 37, 27, 0.12);
+      --shadow-dialog: 0 8px 32px rgba(49, 37, 27, 0.16);
+      /* === 字体 === */
+      --font-sans: "Georgia", "Noto Serif SC", system-ui, serif;
+    }
+  </style>
+
+  <style>
+    body {
+      min-height: max(812px, 100dvh);
+      font-family: var(--font-sans);
+    }
+  </style>
+
+  <!-- 图片兜底 -->
+  <script>
+    document.addEventListener('error', function (e) {
+      const img = e.target;
+      if (img.tagName !== 'IMG' || img.dataset.fallback) return;
+      img.dataset.fallback = '1';
+      const esc = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+      const cat = img.getAttribute('data-category') || '其他';
+      const alt = img.getAttribute('alt') || '';
+      const label = esc(alt.length > 8 ? alt.slice(0, 8) + '…' : alt);
+      const icons = { '人物': '👤', '自然风景': '🏞', '动物': '🐾', '建筑城市': '🏙', '运动体育': '⚽', '交通工具': '🚗', '食物': '🍽', '服饰时尚': '👗', '商业科技': '💼', '游戏娱乐': '🎮', '艺术': '🎨', '其他': '🖼' };
+      const icon = icons[cat] || '🖼';
+      const w = img.width || 400, h = img.height || 300;
+      const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}"><rect width="100%" height="100%" fill="%23f3f4f6"/><text x="50%" y="45%" text-anchor="middle" font-size="${Math.min(w, h) * 0.18}" dominant-baseline="central">${icon}</text><text x="50%" y="68%" text-anchor="middle" font-size="${Math.min(w, h) * 0.07}" fill="%239ca3af" font-family="system-ui,sans-serif" dominant-baseline="central">${label}</text></svg>`;
+      img.src = 'data:image/svg+xml,' + svg;
+    }, true);
+  </script>
+</head>
+
+<body class="bg-background text-on-surface font-sans">
+
+  <!-- @nav:start 导航组件，不需要的页面则不要复制此段（从 @nav:start 到 @nav:end） -->
+  <!-- 顶部 Header（一级页无返回按钮） -->
+  <header class="bg-background sticky top-0 z-40 h-14 flex items-center justify-between px-4">
+    <div class="w-10 h-10 flex items-center justify-center">
+    </div>
+    <h1 class="text-base font-semibold text-on-surface">历史记录</h1>
+    <button id="btn-export" class="w-10 h-10 flex items-center justify-center text-on-surface-variant rounded-full
+                   hover:bg-surface-container transition-colors">
+      <i data-lucide="download" class="w-5 h-5"></i>
+    </button>
+  </header>
+
+  <!-- 底部 TabBar（一级页专用） -->
+  <nav class="fixed bottom-0 left-0 right-0 z-40 bg-surface
+              flex justify-around items-center h-14 pb-[env(safe-area-inset-bottom)]
+              border-t border-outline-variant/20">
+    <a href="home.html" class="flex flex-col items-center gap-0.5 px-5 py-1.5 text-on-surface-variant
+                       hover:text-on-surface transition-colors">
+      <i data-lucide="book-open" class="w-5 h-5"></i>
+      <span class="text-[10px] font-bold tracking-wide">题库</span>
+    </a>
+    <a href="random.html" class="flex flex-col items-center gap-0.5 px-5 py-1.5 text-on-surface-variant
+                       hover:text-on-surface transition-colors">
+      <i data-lucide="shuffle" class="w-5 h-5"></i>
+      <span class="text-[10px] font-bold tracking-wide">随机</span>
+    </a>
+    <a href="interview.html" class="flex flex-col items-center gap-0.5 px-5 py-1.5 text-on-surface-variant
+                       hover:text-on-surface transition-colors">
+      <i data-lucide="mic" class="w-5 h-5"></i>
+      <span class="text-[10px] font-bold tracking-wide">面试</span>
+    </a>
+    <a href="history.html" class="flex flex-col items-center gap-0.5 px-5 py-1.5 text-primary"
+       aria-current="page">
+      <i data-lucide="history" class="w-5 h-5"></i>
+      <span class="text-[10px] font-bold tracking-wide">记录</span>
+    </a>
+  </nav>
+  <!-- @nav:end 导航组件，不需要的页面则不要复制此段 -->
+
+  <main class="overflow-y-auto pb-[calc(3.5rem+env(safe-area-inset-bottom))]">
+    <!-- @main-content:start -->
+    <div class="pt-4 px-4">
+      <!-- 操作按钮区 -->
+      <div class="flex gap-3 mb-6">
+        <button id="btn-clear-all" class="flex-1 bg-surface-container text-error py-3 rounded-xl text-base font-semibold
+                       hover:bg-surface-container-high active:scale-[0.98] transition-all inline-flex items-center justify-center gap-2">
+          <i data-lucide="trash-2" class="w-5 h-5"></i>清空记录
+        </button>
+      </div>
+
+      <!-- 历史记录列表 -->
+      <div id="history-list" class="space-y-3">
+        <!-- 列表-记录1 -->
+        <div class="bg-surface rounded-xl shadow-card p-4" data-id="1">
+          <div class="flex items-start justify-between mb-3">
+            <div class="flex-1 min-w-0 pr-3">
+              <h3 class="text-base font-semibold text-on-surface line-clamp-2">请解释一下什么是 JavaScript 的闭包，以及它在实际开发中的应用场景？</h3>
+            </div>
+            <div class="flex flex-col items-end gap-2">
+              <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-success/15 text-success">已完成</span>
+              <button class="btn-delete w-8 h-8 flex items-center justify-center text-on-surface-variant rounded-full hover:bg-surface-container transition-colors" aria-label="删除记录">
+                <i data-lucide="trash" class="w-4 h-4"></i>
+              </button>
+            </div>
+          </div>
+          <div class="space-y-2">
+            <div class="flex items-center gap-2 text-xs text-on-surface-variant">
+              <i data-lucide="clock" class="w-4 h-4"></i>
+              <span>用时：5分32秒</span>
+            </div>
+            <div class="bg-surface-container rounded-lg p-3">
+              <p class="text-sm text-on-surface line-clamp-3">闭包是指有权访问另一个函数作用域中变量的函数。创建闭包的常见方式是在一个函数内部创建另一个函数。闭包的应用场景包括：数据私有化、函数柯里化、模块化开发等。</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- 列表-记录2 -->
+        <div class="bg-surface rounded-xl shadow-card p-4" data-id="2">
+          <div class="flex items-start justify-between mb-3">
+            <div class="flex-1 min-w-0 pr-3">
+              <h3 class="text-base font-semibold text-on-surface line-clamp-2">React 中的 useState 和 useEffect 分别有什么作用？请举例说明。</h3>
+            </div>
+            <div class="flex flex-col items-end gap-2">
+              <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-warning/15 text-warning">进行中</span>
+              <button class="btn-delete w-8 h-8 flex items-center justify-center text-on-surface-variant rounded-full hover:bg-surface-container transition-colors" aria-label="删除记录">
+                <i data-lucide="trash" class="w-4 h-4"></i>
+              </button>
+            </div>
+          </div>
+          <div class="space-y-2">
+            <div class="flex items-center gap-2 text-xs text-on-surface-variant">
+              <i data-lucide="clock" class="w-4 h-4"></i>
+              <span>用时：2分15秒</span>
+            </div>
+            <div class="bg-surface-container rounded-lg p-3">
+              <p class="text-sm text-on-surface line-clamp-3">useState 用于在函数组件中添加状态，useEffect 用于处理副作用。例如，我们可以用 useState 管理输入框的值，用 useEffect 在组件挂载时 fetch 数据。</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- 列表-记录3 -->
+        <div class="bg-surface rounded-xl shadow-card p-4" data-id="3">
+          <div class="flex items-start justify-between mb-3">
+            <div class="flex-1 min-w-0 pr-3">
+              <h3 class="text-base font-semibold text-on-surface line-clamp-2">什么是 CSS 盒模型？标准盒模型和 IE 盒模型有什么区别？</h3>
+            </div>
+            <div class="flex flex-col items-end gap-2">
+              <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-success/15 text-success">已完成</span>
+              <button class="btn-delete w-8 h-8 flex items-center justify-center text-on-surface-variant rounded-full hover:bg-surface-container transition-colors" aria-label="删除记录">
+                <i data-lucide="trash" class="w-4 h-4"></i>
+              </button>
+            </div>
+          </div>
+          <div class="space-y-2">
+            <div class="flex items-center gap-2 text-xs text-on-surface-variant">
+              <i data-lucide="clock" class="w-4 h-4"></i>
+              <span>用时：3分48秒</span>
+            </div>
+            <div class="bg-surface-container rounded-lg p-3">
+              <p class="text-sm text-on-surface line-clamp-3">CSS 盒模型包括内容区、内边距、边框和外边距。标准盒模型的 width/height 只包含内容区，IE 盒模型的 width/height 包含内容区、内边距和边框。可以通过 box-sizing 属性切换。</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- 列表-记录4 -->
+        <div class="bg-surface rounded-xl shadow-card p-4" data-id="4">
+          <div class="flex items-start justify-between mb-3">
+            <div class="flex-1 min-w-0 pr-3">
+              <h3 class="text-base font-semibold text-on-surface line-clamp-2">如何优化前端性能？请列出至少5种常见的优化方法。</h3>
+            </div>
+            <div class="flex flex-col items-end gap-2">
+              <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-success/15 text-success">已完成</span>
+              <button class="btn-delete w-8 h-8 flex items-center justify-center text-on-surface-variant rounded-full hover:bg-surface-container transition-colors" aria-label="删除记录">
+                <i data-lucide="trash" class="w-4 h-4"></i>
+              </button>
+            </div>
+          </div>
+          <div class="space-y-2">
+            <div class="flex items-center gap-2 text-xs text-on-surface-variant">
+              <i data-lucide="clock" class="w-4 h-4"></i>
+              <span>用时：8分12秒</span>
+            </div>
+            <div class="bg-surface-container rounded-lg p-3">
+              <p class="text-sm text-on-surface line-clamp-3">常见的前端性能优化方法包括：1. 代码压缩和打包；2. 图片优化（懒加载、WebP格式）；3. 使用CDN；4. 浏览器缓存；5. 减少DOM操作；6. 使用虚拟列表等。</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 删除确认弹窗 -->
+    <div id="delete-modal" class="fixed inset-0 bg-black/50 z-50 hidden items-center justify-center">
+      <div class="bg-surface rounded-2xl w-[85%] max-w-sm p-6 shadow-dialog">
+        <h3 id="modal-title" class="text-lg font-bold text-on-surface mb-2">删除记录</h3>
+        <p id="modal-message" class="text-sm text-on-surface-variant mb-6">确定要删除这条记录吗？此操作不可恢复。</p>
+        <div class="flex gap-3">
+          <button id="btn-cancel" class="flex-1 bg-surface-container text-on-surface-variant py-3 rounded-xl text-base font-semibold
+                         hover:bg-surface-container-high active:scale-[0.98] transition-all">取消</button>
+          <button id="btn-confirm" class="flex-1 bg-error text-white py-3 rounded-xl text-base font-semibold
+                         hover:opacity-90 active:scale-[0.98] transition-all">删除</button>
+        </div>
+      </div>
+    </div>
+    <!-- @main-content:end -->
+  </main>
+
+  <script>
+    // 导航辅助函数
+    function navPush(route) {
+        console.log(`[原型演示] PUSH 到: ${route}`);
+        window.location.href = route;
+    }
+
+    function navReplace(route) {
+        console.log(`[原型演示] REPLACE 为: ${route}`);
+        window.location.replace(route);
+    }
+
+    function navReset(route) {
+        console.log(`[原型演示] RESET 到: ${route}`);
+        window.location.href = route;
+    }
+
+    function navBack() {
+        console.log(`[原型演示] BACK 返回上一页`);
+        if(window.history.length > 1) window.history.back();
+    }
+
+    $(function() {
+        // TabBar 导航
+        $('#nav-home').on('click', function(e) {
+            e.preventDefault();
+            navReset('home.html');
+        });
+        $('#nav-random').on('click', function(e) {
+            e.preventDefault();
+            navReset('random.html');
+        });
+        $('#nav-interview').on('click', function(e) {
+            e.preventDefault();
+            navReset('interview.html');
+        });
+        $('#nav-history').on('click', function(e) {
+            e.preventDefault();
+            navReset('history.html');
+        });
+
+        let deleteTarget = null;
+        let deleteType = 'single'; // 'single' or 'all'
+
+        // 导出数据按钮
+        $('#btn-export').on('click', function() {
+            console.log('导出JSON格式数据');
+            // 模拟导出功能 - 实际应收集所有记录数据并生成JSON文件下载
+            const mockData = [
+                {
+                    id: 1,
+                    question: '请解释一下什么是 JavaScript 的闭包，以及它在实际开发中的应用场景？',
+                    duration: '5分32秒',
+                    status: '已完成',
+                    answer: '闭包是指有权访问另一个函数作用域中变量的函数...'
+                },
+                {
+                    id: 2,
+                    question: 'React 中的 useState 和 useEffect 分别有什么作用？请举例说明。',
+                    duration: '2分15秒',
+                    status: '进行中',
+                    answer: 'useState 用于在函数组件中添加状态...'
+                }
+            ];
+            const dataStr = JSON.stringify(mockData, null, 2);
+            console.log('导出的数据:', dataStr);
+            alert('JSON数据已导出到控制台（演示）');
+        });
+
+        // 单条删除按钮
+        $('#history-list').on('click', '.btn-delete', function(e) {
+            e.stopPropagation();
+            deleteTarget = $(this).closest('[data-id]');
+            deleteType = 'single';
+            $('#modal-title').text('删除记录');
+            $('#modal-message').text('确定要删除这条记录吗？此操作不可恢复。');
+            $('#delete-modal').removeClass('hidden').addClass('flex');
+        });
+
+        // 清空所有按钮
+        $('#btn-clear-all').on('click', function() {
+            deleteTarget = null;
+            deleteType = 'all';
+            $('#modal-title').text('清空记录');
+            $('#modal-message').text('确定要清空所有历史记录吗？此操作不可恢复。');
+            $('#delete-modal').removeClass('hidden').addClass('flex');
+        });
+
+        // 取消按钮
+        $('#btn-cancel').on('click', function() {
+            $('#delete-modal').addClass('hidden').removeClass('flex');
+            deleteTarget = null;
+        });
+
+        // 确认删除按钮
+        $('#btn-confirm').on('click', function() {
+            if (deleteType === 'single' && deleteTarget) {
+                console.log('删除单条记录，ID:', deleteTarget.data('id'));
+                deleteTarget.remove();
+            } else if (deleteType === 'all') {
+                console.log('清空所有记录');
+                $('#history-list').empty();
+            }
+            $('#delete-modal').addClass('hidden').removeClass('flex');
+            deleteTarget = null;
+        });
+
+        // 点击弹窗背景关闭
+        $('#delete-modal').on('click', function(e) {
+            if (e.target === this) {
+                $('#delete-modal').addClass('hidden').removeClass('flex');
+                deleteTarget = null;
+            }
+        });
+
+        lucide.createIcons();
+    });
+  </script>
+</body>
+
+</html>

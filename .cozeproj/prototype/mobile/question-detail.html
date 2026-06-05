@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
+
+  <!-- 字体 -->
+  <link href="https://lf-code-agent.coze.cn/obj/x-ai-cn/fonts/google/google-all-fonts.css" rel="stylesheet"/>
+
+  <script src="https://lf-code-agent.coze.cn/obj/x-ai-cn/cdn/jquery/jquery-3.7.1.min.js"></script>
+  <script src="https://lf-code-agent.coze.cn/obj/x-ai-cn/cdn/lucide/lucide-1.11.0.min.js"></script>
+  <script src="https://lf-code-agent.coze.cn/obj/x-ai-cn/cdn/tailwindcss/tailwindcss-browser-4.2.4.min.js"></script>
+
+  <style type="text/tailwindcss">
+    @theme {
+      /* === 品牌色 === */
+      --color-primary:              #C96F3D;
+      --color-primary-container:    #FFF9F1;
+      --color-on-primary:           #ffffff;
+      /* === 背景 / 表面（纸感风） === */
+      --color-background:                 #FBF3E7;
+      --color-surface-container-lowest:   #FFF9F1;
+      --color-surface:                    #FBF3E7;
+      --color-surface-container:          #FFF9F1;
+      --color-surface-container-high:     #F5EDE3;
+      --color-surface-container-highest:  #EDE5DA;
+      /* === 文字 === */
+      --color-on-surface:           #31251B;
+      --color-on-surface-variant:   #8B7662;
+      /* === 功能色 === */
+      --color-success:  #7E9F7A;
+      --color-error:    #D9534F;
+      --color-warning:  #F0AD4E;
+      /* === 边框 === */
+      --color-outline:          #8B7662;
+      --color-outline-variant:  #D4C9BC;
+      /* === 圆角 === */
+      --radius-sm:   0.25rem;
+      --radius-md:   0.5rem;
+      --radius-lg:   0.75rem;
+      --radius-xl:   1rem;
+      --radius-2xl:  1.5rem;
+      --radius-full: 9999px;
+      /* === 阴影 === */
+      --shadow-card:   0 2px 8px rgba(49, 37, 27, 0.08);
+      --shadow-float:  0 4px 16px rgba(49, 37, 27, 0.12);
+      --shadow-dialog: 0 8px 32px rgba(49, 37, 27, 0.16);
+      /* === 字体 === */
+      --font-sans: "Georgia", "Noto Serif SC", system-ui, serif;
+    }
+  </style>
+
+  <style>
+    body {
+      min-height: max(812px, 100dvh);
+      font-family: var(--font-sans);
+    }
+  </style>
+
+  <!-- 图片兜底 -->
+  <script>
+    document.addEventListener('error', function (e) {
+      const img = e.target;
+      if (img.tagName !== 'IMG' || img.dataset.fallback) return;
+      img.dataset.fallback = '1';
+      const esc = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+      const cat = img.getAttribute('data-category') || '其他';
+      const alt = img.getAttribute('alt') || '';
+      const label = esc(alt.length > 8 ? alt.slice(0, 8) + '…' : alt);
+      const icons = { '人物': '👤', '自然风景': '🏞', '动物': '🐾', '建筑城市': '🏙', '运动体育': '⚽', '交通工具': '🚗', '食物': '🍽', '服饰时尚': '👗', '商业科技': '💼', '游戏娱乐': '🎮', '艺术': '🎨', '其他': '🖼' };
+      const icon = icons[cat] || '🖼';
+      const w = img.width || 400, h = img.height || 300;
+      const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}"><rect width="100%" height="100%" fill="%23f3f4f6"/><text x="50%" y="45%" text-anchor="middle" font-size="${Math.min(w, h) * 0.18}" dominant-baseline="central">${icon}</text><text x="50%" y="68%" text-anchor="middle" font-size="${Math.min(w, h) * 0.07}" fill="%239ca3af" font-family="system-ui,sans-serif" dominant-baseline="central">${label}</text></svg>`;
+      img.src = 'data:image/svg+xml,' + svg;
+    }, true);
+  </script>
+</head>
+
+<body class="bg-background text-on-surface font-sans">
+
+  <!-- 顶部 Header（二级页带返回按钮） -->
+  <header class="bg-background sticky top-0 z-40 h-14 flex items-center justify-between px-4">
+    <button id="btn-back" class="w-10 h-10 flex items-center justify-center text-on-surface-variant rounded-full
+                   hover:bg-surface-container active:bg-surface-container-high transition-colors">
+      <i data-lucide="arrow-left" class="w-5 h-5"></i>
+    </button>
+    <h1 class="text-base font-semibold text-on-surface">题目详情</h1>
+    <button class="w-10 h-10 flex items-center justify-center text-on-surface-variant rounded-full
+                   hover:bg-surface-container transition-colors">
+      <i data-lucide="ellipsis-vertical" class="w-5 h-5"></i>
+    </button>
+  </header>
+
+  <main class="overflow-y-auto pb-[calc(3.5rem+env(safe-area-inset-bottom))]">
+    <!-- 题目信息卡片 -->
+    <div class="bg-surface rounded-xl shadow-card mx-4 mt-4 p-4">
+      <!-- 标签区域 -->
+      <div class="flex items-center gap-2 mb-3">
+        <!-- 难度标签 -->
+        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-success/15 text-success">中等</span>
+        <!-- 来源标签 -->
+        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-primary/15 text-primary">字节跳动</span>
+      </div>
+      
+      <!-- 题目描述 -->
+      <div class="mb-4">
+        <h2 class="text-xl font-bold text-on-surface mb-3">如何实现一个高效的 JavaScript 深拷贝函数？</h2>
+        <p class="text-sm text-on-surface leading-relaxed">
+          请详细说明如何实现一个能够处理各种数据类型（包括对象、数组、循环引用、Date、RegExp 等）的高效深拷贝函数，并解释其实现原理。
+        </p>
+      </div>
+    </div>
+
+    <!-- 参考答案区域 -->
+    <div class="bg-surface rounded-xl shadow-card mx-4 mt-4">
+      <button id="btn-toggle-answer" class="w-full flex items-center justify-between p-4">
+        <div class="flex items-center gap-2">
+          <i data-lucide="file-text" class="w-5 h-5 text-primary"></i>
+          <span class="text-base font-semibold text-on-surface">参考答案</span>
+        </div>
+        <i id="icon-answer" data-lucide="chevron-down" class="w-5 h-5 text-on-surface-variant transition-transform"></i>
+      </button>
+      
+      <!-- 参考答案内容 -->
+      <div id="answer-content" class="px-4 pb-4">
+        <div class="bg-surface-container rounded-lg p-3">
+          <pre class="text-xs text-on-surface overflow-x-auto"><code>function deepClone(obj, hash = new WeakMap()) {
+  // 处理基本类型和 null
+  if (obj === null || typeof obj !== 'object') {
+    return obj;
+  }
+  
+  // 处理循环引用
+  if (hash.has(obj)) {
+    return hash.get(obj);
+  }
+  
+  // 处理 Date
+  if (obj instanceof Date) {
+    return new Date(obj.getTime());
+  }
+  
+  // 处理 RegExp
+  if (obj instanceof RegExp) {
+    return new RegExp(obj.source, obj.flags);
+  }
+  
+  // 处理数组和对象
+  const clonedObj = Array.isArray(obj) ? [] : {};
+  
+  // 记录到哈希表
+  hash.set(obj, clonedObj);
+  
+  // 递归拷贝
+  for (let key in obj) {
+    if (Object.prototype.hasOwnProperty.call(obj, key)) {
+      clonedObj[key] = deepClone(obj[key], hash);
+    }
+  }
+  
+  return clonedObj;
+}</code></pre>
+        </div>
+      </div>
+    </div>
+
+    <!-- 答题建议区域 -->
+    <div class="bg-surface rounded-xl shadow-card mx-4 mt-4">
+      <button id="btn-toggle-suggestion" class="w-full flex items-center justify-between p-4">
+        <div class="flex items-center gap-2">
+          <i data-lucide="lightbulb" class="w-5 h-5 text-warning"></i>
+          <span class="text-base font-semibold text-on-surface">答题建议</span>
+        </div>
+        <i id="icon-suggestion" data-lucide="chevron-down" class="w-5 h-5 text-on-surface-variant transition-transform"></i>
+      </button>
+      
+      <!-- 答题建议内容 -->
+      <div id="suggestion-content" class="px-4 pb-4">
+        <div class="space-y-3">
+          <div class="flex items-start gap-2">
+            <span class="text-primary font-bold mt-0.5">1.</span>
+            <p class="text-sm text-on-surface">先分析深拷贝需要解决的核心问题：循环引用、特殊类型处理、性能优化。</p>
+          </div>
+          <div class="flex items-start gap-2">
+            <span class="text-primary font-bold mt-0.5">2.</span>
+            <p class="text-sm text-on-surface">从基础实现开始，逐步添加对各种特殊类型的支持。</p>
+          </div>
+          <div class="flex items-start gap-2">
+            <span class="text-primary font-bold mt-0.5">3.</span>
+            <p class="text-sm text-on-surface">使用 WeakMap 处理循环引用，避免内存泄漏。</p>
+          </div>
+          <div class="flex items-start gap-2">
+            <span class="text-primary font-bold mt-0.5">4.</span>
+            <p class="text-sm text-on-surface">考虑边界条件：函数、Symbol、BigInt 等特殊类型的处理策略。</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 底部按钮区域 -->
+    <div class="px-4 mt-6 mb-8">
+      <button id="btn-start-practice" class="w-full bg-primary text-on-primary py-3.5 rounded-xl text-base font-semibold
+               hover:opacity-90 active:scale-[0.98] transition-all inline-flex items-center justify-center gap-2">
+        <i data-lucide="mic" class="w-5 h-5"></i>
+        开始练习
+      </button>
+    </div>
+  </main>
+
+  <script>
+    // 导航辅助函数
+    function navPush(route) {
+        console.log('[原型演示] PUSH 到: ' + route);
+        window.location.href = route;
+    }
+    
+    function navReplace(route) {
+        console.log('[原型演示] REPLACE 为: ' + route);
+        window.location.replace(route);
+    }
+    
+    function navReset(route) {
+        console.log('[原型演示] RESET 到: ' + route);
+        window.location.href = route;
+    }
+    
+    function navBack() {
+        console.log('[原型演示] BACK 返回上一页');
+        if(window.history.length > 1) window.history.back();
+    }
+
+    $(function() {
+      // 返回按钮
+      $('#btn-back').on('click', function() {
+        navBack();
+      });
+
+      // 切换参考答案展开/折叠
+      $('#btn-toggle-answer').on('click', function() {
+        $('#answer-content').toggleClass('hidden');
+        $('#icon-answer').toggleClass('rotate-180');
+      });
+
+      // 切换答题建议展开/折叠
+      $('#btn-toggle-suggestion').on('click', function() {
+        $('#suggestion-content').toggleClass('hidden');
+        $('#icon-suggestion').toggleClass('rotate-180');
+      });
+
+      // 开始练习按钮
+      $('#btn-start-practice').on('click', function() {
+        navPush('interview-detail.html?id=1');
+      });
+
+      // 初始化图标
+      lucide.createIcons();
+    });
+  </script>
+  <script>lucide.createIcons();</script>
+</body>
+
+</html>

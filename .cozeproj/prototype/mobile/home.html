@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
+
+  <!-- 字体 -->
+  <link href="https://lf-code-agent.coze.cn/obj/x-ai-cn/fonts/google/google-all-fonts.css" rel="stylesheet"/>
+
+  <script src="https://lf-code-agent.coze.cn/obj/x-ai-cn/cdn/jquery/jquery-3.7.1.min.js"></script>
+  <script src="https://lf-code-agent.coze.cn/obj/x-ai-cn/cdn/lucide/lucide-1.11.0.min.js"></script>
+  <script src="https://lf-code-agent.coze.cn/obj/x-ai-cn/cdn/tailwindcss/tailwindcss-browser-4.2.4.min.js"></script>
+
+  <style type="text/tailwindcss">
+    @theme {
+      /* === 品牌色 === */
+      --color-primary:              #C96F3D;
+      --color-primary-container:    #FFF9F1;
+      --color-on-primary:           #ffffff;
+      /* === 背景 / 表面（纸感风） === */
+      --color-background:                 #FBF3E7;
+      --color-surface-container-lowest:   #FFF9F1;
+      --color-surface:                    #FBF3E7;
+      --color-surface-container:          #FFF9F1;
+      --color-surface-container-high:     #F5EDE3;
+      --color-surface-container-highest:  #EDE5DA;
+      /* === 文字 === */
+      --color-on-surface:           #31251B;
+      --color-on-surface-variant:   #8B7662;
+      /* === 功能色 === */
+      --color-success:  #7E9F7A;
+      --color-error:    #D9534F;
+      --color-warning:  #F0AD4E;
+      /* === 边框 === */
+      --color-outline:          #8B7662;
+      --color-outline-variant:  #D4C9BC;
+      /* === 圆角 === */
+      --radius-sm:   0.25rem;
+      --radius-md:   0.5rem;
+      --radius-lg:   0.75rem;
+      --radius-xl:   1rem;
+      --radius-2xl:  1.5rem;
+      --radius-full: 9999px;
+      /* === 阴影 === */
+      --shadow-card:   0 2px 8px rgba(49, 37, 27, 0.08);
+      --shadow-float:  0 4px 16px rgba(49, 37, 27, 0.12);
+      --shadow-dialog: 0 8px 32px rgba(49, 37, 27, 0.16);
+      /* === 字体 === */
+      --font-sans: "Georgia", "Noto Serif SC", system-ui, serif;
+    }
+  </style>
+
+  <style>
+    body {
+      min-height: max(812px, 100dvh);
+      font-family: var(--font-sans);
+    }
+  </style>
+
+  <!-- 图片兜底 -->
+  <script>
+    document.addEventListener('error', function (e) {
+      const img = e.target;
+      if (img.tagName !== 'IMG' || img.dataset.fallback) return;
+      img.dataset.fallback = '1';
+      const esc = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+      const cat = img.getAttribute('data-category') || '其他';
+      const alt = img.getAttribute('alt') || '';
+      const label = esc(alt.length > 8 ? alt.slice(0, 8) + '…' : alt);
+      const icons = { '人物': '👤', '自然风景': '🏞', '动物': '🐾', '建筑城市': '🏙', '运动体育': '⚽', '交通工具': '🚗', '食物': '🍽', '服饰时尚': '👗', '商业科技': '💼', '游戏娱乐': '🎮', '艺术': '🎨', '其他': '🖼' };
+      const icon = icons[cat] || '🖼';
+      const w = img.width || 400, h = img.height || 300;
+      const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}"><rect width="100%" height="100%" fill="%23f3f4f6"/><text x="50%" y="45%" text-anchor="middle" font-size="${Math.min(w, h) * 0.18}" dominant-baseline="central">${icon}</text><text x="50%" y="68%" text-anchor="middle" font-size="${Math.min(w, h) * 0.07}" fill="%239ca3af" font-family="system-ui,sans-serif" dominant-baseline="central">${label}</text></svg>`;
+      img.src = 'data:image/svg+xml,' + svg;
+    }, true);
+  </script>
+</head>
+
+<body class="bg-background text-on-surface font-sans">
+
+  <!-- @nav:start 导航组件，不需要的页面则不要复制此段（从 @nav:start 到 @nav:end） -->
+  <!-- 顶部 Header（一级页无返回按钮） -->
+  <header class="bg-background sticky top-0 z-40 h-14 flex items-center justify-between px-4">
+    <div class="w-10 h-10 flex items-center justify-center">
+    </div>
+    <h1 class="text-base font-semibold text-on-surface">面试练习</h1>
+    <button class="w-10 h-10 flex items-center justify-center text-on-surface-variant rounded-full
+                   hover:bg-surface-container transition-colors">
+      <i data-lucide="settings" class="w-5 h-5"></i>
+    </button>
+  </header>
+
+  <!-- 底部 TabBar（一级页专用） -->
+  <nav class="fixed bottom-0 left-0 right-0 z-40 bg-surface
+              flex justify-around items-center h-14 pb-[env(safe-area-inset-bottom)]
+              border-t border-outline-variant/20">
+    <a href="home.html" class="flex flex-col items-center gap-0.5 px-5 py-1.5 text-primary"
+       aria-current="page">
+      <i data-lucide="book-open" class="w-5 h-5"></i>
+      <span class="text-[10px] font-bold tracking-wide">题库</span>
+    </a>
+    <a href="random.html" class="flex flex-col items-center gap-0.5 px-5 py-1.5 text-on-surface-variant
+                       hover:text-on-surface transition-colors">
+      <i data-lucide="shuffle" class="w-5 h-5"></i>
+      <span class="text-[10px] font-bold tracking-wide">随机</span>
+    </a>
+    <a href="interview.html" class="flex flex-col items-center gap-0.5 px-5 py-1.5 text-on-surface-variant
+                       hover:text-on-surface transition-colors">
+      <i data-lucide="mic" class="w-5 h-5"></i>
+      <span class="text-[10px] font-bold tracking-wide">面试</span>
+    </a>
+    <a href="history.html" class="flex flex-col items-center gap-0.5 px-5 py-1.5 text-on-surface-variant
+                       hover:text-on-surface transition-colors">
+      <i data-lucide="history" class="w-5 h-5"></i>
+      <span class="text-[10px] font-bold tracking-wide">记录</span>
+    </a>
+  </nav>
+  <!-- @nav:end 导航组件，不需要的页面则不要复制此段 -->
+
+  <main class="flex-1 pb-[calc(3.5rem+env(safe-area-inset-bottom))]">
+    <!-- @main-content:start -->
+    <div class="px-4 pt-4 pb-6">
+      <!-- 搜索框 -->
+      <div class="relative mb-6">
+        <i data-lucide="search" class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-on-surface-variant"></i>
+        <input 
+          id="search-input"
+          type="text" 
+          placeholder="搜索题目..." 
+          class="w-full bg-surface-container border-none rounded-xl pl-12 pr-4 py-3 text-base
+                 text-on-surface placeholder:text-on-surface-variant/50
+                 focus:outline-none focus:ring-2 focus:ring-primary/30 transition-colors"
+        />
+      </div>
+
+      <!-- 类别筛选 -->
+      <div class="mb-6">
+        <h2 class="text-lg font-bold text-on-surface mb-3">题目分类</h2>
+        <div id="category-filter" class="flex flex-wrap gap-2">
+          <button class="category-btn active px-3 py-1.5 rounded-full text-sm font-medium bg-primary text-on-primary" data-category="all">
+            全部
+          </button>
+          <button class="category-btn px-3 py-1.5 rounded-full text-sm font-medium bg-surface-container text-on-surface-variant" data-category="product-thinking">
+            产品思维
+          </button>
+          <button class="category-btn px-3 py-1.5 rounded-full text-sm font-medium bg-surface-container text-on-surface-variant" data-category="data-analysis">
+            数据分析
+          </button>
+          <button class="category-btn px-3 py-1.5 rounded-full text-sm font-medium bg-surface-container text-on-surface-variant" data-category="user-research">
+            用户研究
+          </button>
+          <button class="category-btn px-3 py-1.5 rounded-full text-sm font-medium bg-surface-container text-on-surface-variant" data-category="product-design">
+            产品设计
+          </button>
+          <button class="category-btn px-3 py-1.5 rounded-full text-sm font-medium bg-surface-container text-on-surface-variant" data-category="project-management">
+            项目管理
+          </button>
+          <button class="category-btn px-3 py-1.5 rounded-full text-sm font-medium bg-surface-container text-on-surface-variant" data-category="business-analysis">
+            商业分析
+          </button>
+        </div>
+      </div>
+
+      <!-- 题目列表 -->
+      <div>
+        <h2 class="text-lg font-bold text-on-surface mb-3">题目列表</h2>
+        <div id="question-list" class="space-y-3">
+          <!-- 题目1 - 产品思维 -->
+          <div class="question-card bg-surface rounded-xl shadow-card p-4" data-category="product-thinking">
+            <div class="flex items-start justify-between mb-2">
+              <h3 class="text-base font-semibold text-on-surface flex-1">如何设计一款面向老年人的智能手机？</h3>
+              <button class="toggle-btn w-8 h-8 flex items-center justify-center text-on-surface-variant rounded-full
+                            hover:bg-surface-container transition-colors" data-toggle="1">
+                <i data-lucide="chevron-down" class="w-5 h-5"></i>
+              </button>
+            </div>
+            <div class="flex items-center gap-2 mb-3">
+              <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-warning/20 text-warning">中等</span>
+              <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-primary/15 text-primary">字节</span>
+            </div>
+            <div class="question-detail hidden" id="detail-1">
+              <p class="text-sm text-on-surface-variant mb-3">
+                这是一道经典的产品思维题目，考察对用户群体的理解和产品设计能力。需要从老年人的真实需求出发，考虑他们的使用习惯、身体机能特点等因素。
+              </p>
+              <div class="flex gap-2">
+                <button class="view-detail-btn flex-1 bg-primary text-on-primary py-2.5 rounded-lg text-sm font-semibold
+                             hover:opacity-90 active:scale-[0.98] transition-all" data-id="1">
+                  查看详情
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- 题目2 - 数据分析 -->
+          <div class="question-card bg-surface rounded-xl shadow-card p-4" data-category="data-analysis">
+            <div class="flex items-start justify-between mb-2">
+              <h3 class="text-base font-semibold text-on-surface flex-1">如何分析电商平台的用户转化率？</h3>
+              <button class="toggle-btn w-8 h-8 flex items-center justify-center text-on-surface-variant rounded-full
+                            hover:bg-surface-container transition-colors" data-toggle="2">
+                <i data-lucide="chevron-down" class="w-5 h-5"></i>
+              </button>
+            </div>
+            <div class="flex items-center gap-2 mb-3">
+              <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-success/20 text-success">简单</span>
+              <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-primary/15 text-primary">阿里</span>
+            </div>
+            <div class="question-detail hidden" id="detail-2">
+              <p class="text-sm text-on-surface-variant mb-3">
+                数据分析是产品经理的核心能力之一。这道题考察对转化漏斗的理解，以及如何通过数据发现问题、定位原因并提出改进建议。
+              </p>
+              <div class="flex gap-2">
+                <button class="view-detail-btn flex-1 bg-primary text-on-primary py-2.5 rounded-lg text-sm font-semibold
+                             hover:opacity-90 active:scale-[0.98] transition-all" data-id="2">
+                  查看详情
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- 题目3 - 用户研究 -->
+          <div class="question-card bg-surface rounded-xl shadow-card p-4" data-category="user-research">
+            <div class="flex items-start justify-between mb-2">
+              <h3 class="text-base font-semibold text-on-surface flex-1">如何进行有效的用户访谈？</h3>
+              <button class="toggle-btn w-8 h-8 flex items-center justify-center text-on-surface-variant rounded-full
+                            hover:bg-surface-container transition-colors" data-toggle="3">
+                <i data-lucide="chevron-down" class="w-5 h-5"></i>
+              </button>
+            </div>
+            <div class="flex items-center gap-2 mb-3">
+              <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-warning/20 text-warning">中等</span>
+              <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-primary/15 text-primary">腾讯</span>
+            </div>
+            <div class="question-detail hidden" id="detail-3">
+              <p class="text-sm text-on-surface-variant mb-3">
+                用户访谈是获取用户需求的重要方法。这道题考察访谈的准备工作、提问技巧、倾听能力以及如何从访谈中提取有价值的信息。
+              </p>
+              <div class="flex gap-2">
+                <button class="view-detail-btn flex-1 bg-primary text-on-primary py-2.5 rounded-lg text-sm font-semibold
+                             hover:opacity-90 active:scale-[0.98] transition-all" data-id="3">
+                  查看详情
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- 题目4 - 产品设计 -->
+          <div class="question-card bg-surface rounded-xl shadow-card p-4" data-category="product-design">
+            <div class="flex items-start justify-between mb-2">
+              <h3 class="text-base font-semibold text-on-surface flex-1">如何优化社交App的消息通知系统？</h3>
+              <button class="toggle-btn w-8 h-8 flex items-center justify-center text-on-surface-variant rounded-full
+                            hover:bg-surface-container transition-colors" data-toggle="4">
+                <i data-lucide="chevron-down" class="w-5 h-5"></i>
+              </button>
+            </div>
+            <div class="flex items-center gap-2 mb-3">
+              <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-error/20 text-error">困难</span>
+              <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-primary/15 text-primary">美团</span>
+            </div>
+            <div class="question-detail hidden" id="detail-4">
+              <p class="text-sm text-on-surface-variant mb-3">
+                消息通知是社交产品的核心功能，但过度通知会打扰用户。这道题考察在用户体验和产品目标之间的平衡能力，以及对通知策略的深入思考。
+              </p>
+              <div class="flex gap-2">
+                <button class="view-detail-btn flex-1 bg-primary text-on-primary py-2.5 rounded-lg text-sm font-semibold
+                             hover:opacity-90 active:scale-[0.98] transition-all" data-id="4">
+                  查看详情
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- 题目5 - 项目管理 -->
+          <div class="question-card bg-surface rounded-xl shadow-card p-4" data-category="project-management">
+            <div class="flex items-start justify-between mb-2">
+              <h3 class="text-base font-semibold text-on-surface flex-1">如何管理跨部门的产品项目？</h3>
+              <button class="toggle-btn w-8 h-8 flex items-center justify-center text-on-surface-variant rounded-full
+                            hover:bg-surface-container transition-colors" data-toggle="5">
+                <i data-lucide="chevron-down" class="w-5 h-5"></i>
+              </button>
+            </div>
+            <div class="flex items-center gap-2 mb-3">
+              <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-warning/20 text-warning">中等</span>
+              <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-primary/15 text-primary">字节</span>
+            </div>
+            <div class="question-detail hidden" id="detail-5">
+              <p class="text-sm text-on-surface-variant mb-3">
+                跨部门协作是产品经理工作的重要组成部分。这道题考察沟通协调能力、项目管理方法以及如何在复杂的组织环境中推动项目前进。
+              </p>
+              <div class="flex gap-2">
+                <button class="view-detail-btn flex-1 bg-primary text-on-primary py-2.5 rounded-lg text-sm font-semibold
+                             hover:opacity-90 active:scale-[0.98] transition-all" data-id="5">
+                  查看详情
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- @main-content:end -->
+  </main>
+
+  <script>
+    // 导航辅助函数
+    function navPush(route) {
+        console.log(`[原型演示] PUSH 到: ${route}`);
+        window.location.href = route;
+    }
+
+    function navReplace(route) {
+        console.log(`[原型演示] REPLACE 为: ${route}`);
+        window.location.replace(route);
+    }
+
+    function navReset(route) {
+        console.log(`[原型演示] RESET 到: ${route}`);
+        window.location.href = route;
+    }
+
+    function navBack() {
+        console.log(`[原型演示] BACK 返回上一页`);
+        if(window.history.length > 1) window.history.back();
+    }
+
+    $(function() {
+      // TabBar 导航事件
+      $('#nav-home').on('click', function(e) {
+        e.preventDefault();
+        navReset('home.html');
+      });
+
+      // 类别筛选
+      $('.category-btn').on('click', function() {
+        // 更新按钮状态
+        $('.category-btn').removeClass('active bg-primary text-on-primary')
+                          .addClass('bg-surface-container text-on-surface-variant');
+        $(this).addClass('active bg-primary text-on-primary')
+               .removeClass('bg-surface-container text-on-surface-variant');
+
+        const category = $(this).data('category');
+        
+        // 筛选题目
+        if (category === 'all') {
+          $('.question-card').show();
+        } else {
+          $('.question-card').each(function() {
+            if ($(this).data('category') === category) {
+              $(this).show();
+            } else {
+              $(this).hide();
+            }
+          });
+        }
+      });
+
+      // 展开/收起详情
+      $('.toggle-btn').on('click', function() {
+        const toggleId = $(this).data('toggle');
+        const $detail = $('#detail-' + toggleId);
+        const $icon = $(this).find('i');
+        
+        $detail.toggleClass('hidden');
+        
+        // 切换图标
+        if ($detail.hasClass('hidden')) {
+          $icon.attr('data-lucide', 'chevron-down');
+        } else {
+          $icon.attr('data-lucide', 'chevron-up');
+        }
+        
+        lucide.createIcons();
+      });
+
+      // 查看详情按钮
+      $('.view-detail-btn').on('click', function() {
+        const id = $(this).data('id');
+        navPush(`question-detail.html?id=${id}`);
+      });
+
+      // 搜索功能
+      $('#search-input').on('input', function() {
+        const keyword = $(this).val().toLowerCase();
+        
+        $('.question-card').each(function() {
+          const title = $(this).find('h3').text().toLowerCase();
+          if (title.includes(keyword)) {
+            $(this).show();
+          } else {
+            $(this).hide();
+          }
+        });
+      });
+    });
+  </script>
+
+  <script>lucide.createIcons();</script>
+</body>
+
+</html>

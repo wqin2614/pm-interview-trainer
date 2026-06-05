@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+
+  <!-- 字体 -->
+  <link href="https://lf-code-agent.coze.cn/obj/x-ai-cn/fonts/google/google-all-fonts.css" rel="stylesheet"/>
+
+  <script src="https://lf-code-agent.coze.cn/obj/x-ai-cn/cdn/jquery/jquery-3.7.1.min.js"></script>
+  <script src="https://lf-code-agent.coze.cn/obj/x-ai-cn/cdn/lucide/lucide-1.11.0.min.js"></script>
+  <script src="https://lf-code-agent.coze.cn/obj/x-ai-cn/cdn/tailwindcss/tailwindcss-browser-4.2.4.min.js"></script>
+
+  <style type="text/tailwindcss">
+    @theme {
+      /* === 品牌色 === */
+      --color-primary:              #C96F3D;
+      --color-primary-container:    #FFF9F1;
+      --color-on-primary:           #ffffff;
+      /* === 背景 / 表面（纸感风） === */
+      --color-background:                 #FBF3E7;
+      --color-surface-container-lowest:   #FFF9F1;
+      --color-surface:                    #FBF3E7;
+      --color-surface-container:          #FFF9F1;
+      --color-surface-container-high:     #F5EDE3;
+      --color-surface-container-highest:  #EDE5DA;
+      /* === 文字 === */
+      --color-on-surface:           #31251B;
+      --color-on-surface-variant:   #8B7662;
+      /* === 功能色 === */
+      --color-success:  #7E9F7A;
+      --color-error:    #D9534F;
+      --color-warning:  #F0AD4E;
+      /* === 边框 === */
+      --color-outline:          #8B7662;
+      --color-outline-variant:  #D4C9BC;
+      /* === 圆角 === */
+      --radius-sm:   0.25rem;
+      --radius-md:   0.5rem;
+      --radius-lg:   0.75rem;
+      --radius-xl:   1rem;
+      --radius-2xl:  1.5rem;
+      --radius-full: 9999px;
+      /* === 阴影 === */
+      --shadow-card:   0 2px 8px rgba(49, 37, 27, 0.08);
+      --shadow-float:  0 4px 16px rgba(49, 37, 27, 0.12);
+      --shadow-dialog: 0 8px 32px rgba(49, 37, 27, 0.16);
+      /* === 字体 === */
+      --font-sans: "Georgia", "Noto Serif SC", system-ui, serif;
+    }
+    
+    .slot-item {
+      transition: transform 0.3s ease;
+    }
+    
+    .slot-container {
+      mask-image: linear-gradient(to bottom, transparent, black 20%, black 80%, transparent);
+      -webkit-mask-image: linear-gradient(to bottom, transparent, black 20%, black 80%, transparent);
+    }
+    
+    .spinning .slot-item {
+      animation: spin 0.2s linear infinite;
+    }
+    
+    @keyframes spin {
+      from {
+        transform: translateY(-100%);
+      }
+      to {
+        transform: translateY(100%);
+      }
+    }
+  </style>
+
+  <style>
+    body {
+      min-height: max(812px, 100dvh);
+      font-family: var(--font-sans);
+    }
+  </style>
+
+  <!-- 图片兜底 -->
+  <script>
+    document.addEventListener('error', function (e) {
+      const img = e.target;
+      if (img.tagName !== 'IMG' || img.dataset.fallback) return;
+      img.dataset.fallback = '1';
+      const esc = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+      const cat = img.getAttribute('data-category') || '其他';
+      const alt = img.getAttribute('alt') || '';
+      const label = esc(alt.length > 8 ? alt.slice(0, 8) + '…' : alt);
+      const icons = { '人物': '👤', '自然风景': '🏞', '动物': '🐾', '建筑城市': '🏙', '运动体育': '⚽', '交通工具': '🚗', '食物': '🍽', '服饰时尚': '👗', '商业科技': '💼', '游戏娱乐': '🎮', '艺术': '🎨', '其他': '🖼' };
+      const icon = icons[cat] || '🖼';
+      const w = img.width || 400, h = img.height || 300;
+      const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}"><rect width="100%" height="100%" fill="%23f3f4f6"/><text x="50%" y="45%" text-anchor="middle" font-size="${Math.min(w, h) * 0.18}" dominant-baseline="central">${icon}</text><text x="50%" y="68%" text-anchor="middle" font-size="${Math.min(w, h) * 0.07}" fill="%239ca3af" font-family="system-ui,sans-serif" dominant-baseline="central">${label}</text></svg>`;
+      img.src = 'data:image/svg+xml,' + svg;
+    }, true);
+  </script>
+</head>
+
+<body class="bg-background text-on-surface font-sans">
+
+  <!-- @nav:start 导航组件，不需要的页面则不要复制此段（从 @nav:start 到 @nav:end） -->
+  <!-- 顶部 Header（一级页无返回按钮） -->
+  <header class="bg-background sticky top-0 z-40 h-14 flex items-center justify-between px-4">
+    <div class="w-10 h-10 flex items-center justify-center">
+    </div>
+    <h1 class="text-base font-semibold text-on-surface">随机练习</h1>
+    <button class="w-10 h-10 flex items-center justify-center text-on-surface-variant rounded-full
+                   hover:bg-surface-container transition-colors">
+      <i data-lucide="settings" class="w-5 h-5"></i>
+    </button>
+  </header>
+
+  <!-- 底部 TabBar（一级页专用） -->
+  <nav class="fixed bottom-0 left-0 right-0 z-40 bg-surface
+              flex justify-around items-center h-14 pb-[env(safe-area-inset-bottom)]
+              border-t border-outline-variant/20">
+    <a href="home.html" class="flex flex-col items-center gap-0.5 px-5 py-1.5 text-on-surface-variant
+                       hover:text-on-surface transition-colors">
+      <i data-lucide="book-open" class="w-5 h-5"></i>
+      <span class="text-[10px] font-bold tracking-wide">题库</span>
+    </a>
+    <a href="random.html" class="flex flex-col items-center gap-0.5 px-5 py-1.5 text-primary"
+       aria-current="page">
+      <i data-lucide="shuffle" class="w-5 h-5"></i>
+      <span class="text-[10px] font-bold tracking-wide">随机</span>
+    </a>
+    <a href="interview.html" class="flex flex-col items-center gap-0.5 px-5 py-1.5 text-on-surface-variant
+                       hover:text-on-surface transition-colors">
+      <i data-lucide="mic" class="w-5 h-5"></i>
+      <span class="text-[10px] font-bold tracking-wide">面试</span>
+    </a>
+    <a href="history.html" class="flex flex-col items-center gap-0.5 px-5 py-1.5 text-on-surface-variant
+                       hover:text-on-surface transition-colors">
+      <i data-lucide="history" class="w-5 h-5"></i>
+      <span class="text-[10px] font-bold tracking-wide">记录</span>
+    </a>
+  </nav>
+  <!-- @nav:end 导航组件，不需要的页面则不要复制此段 -->
+
+  <main class="overflow-y-auto pb-[calc(3.5rem+env(safe-area-inset-bottom))]">
+    <!-- @main-content:start -->
+    
+    <!-- 页面标题区域 -->
+    <div class="px-4 pt-8 pb-6">
+      <h2 class="text-xl font-bold text-on-surface">来抽一道题</h2>
+      <p class="text-sm text-on-surface-variant mt-2">点击 Spin 开始随机抽题，也可以先设置筛选条件</p>
+    </div>
+    
+    <!-- 老虎机区域 -->
+    <div class="mx-4 bg-surface rounded-2xl shadow-card p-6" id="slot-machine">
+      <div class="flex justify-center gap-3 mb-6">
+        <!-- 类别槽位 -->
+        <div class="slot-container bg-surface-container rounded-xl p-4 w-24 h-32 overflow-hidden flex items-center justify-center">
+          <div class="text-center">
+            <p class="text-xs text-on-surface-variant mb-2">类别</p>
+            <p class="text-base font-semibold text-on-surface" id="slot-category">JavaScript</p>
+          </div>
+        </div>
+        
+        <!-- 难度槽位 -->
+        <div class="slot-container bg-surface-container rounded-xl p-4 w-24 h-32 overflow-hidden flex items-center justify-center">
+          <div class="text-center">
+            <p class="text-xs text-on-surface-variant mb-2">难度</p>
+            <p class="text-base font-semibold text-on-surface" id="slot-difficulty">中等</p>
+          </div>
+        </div>
+        
+        <!-- 来源槽位 -->
+        <div class="slot-container bg-surface-container rounded-xl p-4 w-24 h-32 overflow-hidden flex items-center justify-center">
+          <div class="text-center">
+            <p class="text-xs text-on-surface-variant mb-2">来源</p>
+            <p class="text-base font-semibold text-on-surface" id="slot-source">字节跳动</p>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Spin 按钮 -->
+      <button id="btn-spin" class="w-full bg-primary text-on-primary py-3.5 rounded-xl text-base font-semibold
+                                     hover:opacity-90 active:scale-[0.98] transition-all inline-flex items-center justify-center gap-2">
+        <i data-lucide="shuffle" class="w-5 h-5"></i>Spin
+      </button>
+    </div>
+    
+    <!-- 筛选条件区域 -->
+    <div class="mx-4 mt-6 bg-surface rounded-2xl shadow-card p-6">
+      <h3 class="text-base font-semibold text-on-surface mb-4">设置筛选条件</h3>
+      
+      <!-- 类别筛选 -->
+      <div class="mb-4">
+        <p class="text-sm text-on-surface-variant mb-2">类别</p>
+        <div class="flex flex-wrap gap-2">
+          <button class="filter-btn-category bg-primary/15 text-primary px-3 py-1.5 rounded-full text-sm font-medium" data-value="JavaScript">JavaScript</button>
+          <button class="filter-btn-category bg-surface-container text-on-surface-variant px-3 py-1.5 rounded-full text-sm font-medium" data-value="CSS">CSS</button>
+          <button class="filter-btn-category bg-surface-container text-on-surface-variant px-3 py-1.5 rounded-full text-sm font-medium" data-value="React">React</button>
+          <button class="filter-btn-category bg-surface-container text-on-surface-variant px-3 py-1.5 rounded-full text-sm font-medium" data-value="算法">算法</button>
+        </div>
+      </div>
+      
+      <!-- 难度筛选 -->
+      <div class="mb-4">
+        <p class="text-sm text-on-surface-variant mb-2">难度</p>
+        <div class="flex flex-wrap gap-2">
+          <button class="filter-btn-difficulty bg-surface-container text-on-surface-variant px-3 py-1.5 rounded-full text-sm font-medium" data-value="简单">简单</button>
+          <button class="filter-btn-difficulty bg-primary/15 text-primary px-3 py-1.5 rounded-full text-sm font-medium" data-value="中等">中等</button>
+          <button class="filter-btn-difficulty bg-surface-container text-on-surface-variant px-3 py-1.5 rounded-full text-sm font-medium" data-value="困难">困难</button>
+        </div>
+      </div>
+      
+      <!-- 来源筛选 -->
+      <div>
+        <p class="text-sm text-on-surface-variant mb-2">来源</p>
+        <div class="flex flex-wrap gap-2">
+          <button class="filter-btn-source bg-surface-container text-on-surface-variant px-3 py-1.5 rounded-full text-sm font-medium" data-value="阿里巴巴">阿里巴巴</button>
+          <button class="filter-btn-source bg-primary/15 text-primary px-3 py-1.5 rounded-full text-sm font-medium" data-value="字节跳动">字节跳动</button>
+          <button class="filter-btn-source bg-surface-container text-on-surface-variant px-3 py-1.5 rounded-full text-sm font-medium" data-value="腾讯">腾讯</button>
+          <button class="filter-btn-source bg-surface-container text-on-surface-variant px-3 py-1.5 rounded-full text-sm font-medium" data-value="其他">其他</button>
+        </div>
+      </div>
+    </div>
+    
+    <!-- 抽取结果区域（默认隐藏） -->
+    <div class="mx-4 mt-6 bg-surface rounded-2xl shadow-card p-6 hidden" id="result-section">
+      <h3 class="text-base font-semibold text-on-surface mb-4">抽到的题目</h3>
+      
+      <!-- 题目卡片 -->
+      <div class="bg-surface-container rounded-xl p-4 mb-4" id="question-card">
+        <div class="flex items-center gap-2 mb-3">
+          <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-primary/15 text-primary">JavaScript</span>
+          <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-surface-container-highest text-on-surface-variant">中等</span>
+          <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-surface-container-highest text-on-surface-variant">字节跳动</span>
+        </div>
+        <h4 class="text-base font-semibold text-on-surface mb-2">解释一下 JavaScript 中的闭包（Closure）是什么？</h4>
+        <p class="text-sm text-on-surface-variant">请详细说明闭包的定义、工作原理以及实际应用场景。</p>
+      </div>
+      
+      <!-- 操作按钮 -->
+      <div class="flex gap-3">
+        <button id="btn-start-answer" class="flex-1 bg-primary text-on-primary py-3.5 rounded-xl text-base font-semibold
+                                               hover:opacity-90 active:scale-[0.98] transition-all inline-flex items-center justify-center gap-2">
+          <i data-lucide="play" class="w-5 h-5"></i>开始答题
+        </button>
+        <button id="btn-retry" class="flex-1 bg-surface-container text-on-surface-variant border-none py-3.5 rounded-xl text-base font-semibold
+                                      hover:bg-surface-container-high active:scale-[0.98] transition-all inline-flex items-center justify-center gap-2">
+          <i data-lucide="refresh-ccw" class="w-5 h-5"></i>重新抽取
+        </button>
+      </div>
+    </div>
+    
+    <!-- @main-content:end -->
+  </main>
+
+  <script>
+    // 导航辅助函数
+    function navPush(route) {
+        console.log(`[原型演示] PUSH 到: ${route}`);
+        window.location.href = route;
+    }
+
+    function navReplace(route) {
+        console.log(`[原型演示] REPLACE 为: ${route}`);
+        window.location.replace(route);
+    }
+
+    function navReset(route) {
+        console.log(`[原型演示] RESET 到: ${route}`);
+        window.location.href = route;
+    }
+
+    function navBack() {
+        console.log(`[原型演示] BACK 返回上一页`);
+        if(window.history.length > 1) window.history.back();
+    }
+    
+    $(function() {
+      let selectedCategory = 'JavaScript';
+      let selectedDifficulty = '中等';
+      let selectedSource = '字节跳动';
+      
+      const categories = ['JavaScript', 'CSS', 'React', '算法'];
+      const difficulties = ['简单', '中等', '困难'];
+      const sources = ['阿里巴巴', '字节跳动', '腾讯', '其他'];
+      
+      // 类别筛选按钮点击
+      $('.filter-btn-category').on('click', function() {
+        $('.filter-btn-category').removeClass('bg-primary/15 text-primary').addClass('bg-surface-container text-on-surface-variant');
+        $(this).removeClass('bg-surface-container text-on-surface-variant').addClass('bg-primary/15 text-primary');
+        selectedCategory = $(this).data('value');
+        $('#slot-category').text(selectedCategory);
+      });
+      
+      // 难度筛选按钮点击
+      $('.filter-btn-difficulty').on('click', function() {
+        $('.filter-btn-difficulty').removeClass('bg-primary/15 text-primary').addClass('bg-surface-container text-on-surface-variant');
+        $(this).removeClass('bg-surface-container text-on-surface-variant').addClass('bg-primary/15 text-primary');
+        selectedDifficulty = $(this).data('value');
+        $('#slot-difficulty').text(selectedDifficulty);
+      });
+      
+      // 来源筛选按钮点击
+      $('.filter-btn-source').on('click', function() {
+        $('.filter-btn-source').removeClass('bg-primary/15 text-primary').addClass('bg-surface-container text-on-surface-variant');
+        $(this).removeClass('bg-surface-container text-on-surface-variant').addClass('bg-primary/15 text-primary');
+        selectedSource = $(this).data('value');
+        $('#slot-source').text(selectedSource);
+      });
+      
+      // Spin 按钮点击
+      $('#btn-spin').on('click', function() {
+        const $btn = $(this);
+        $btn.prop('disabled', true).addClass('opacity-50');
+        
+        // 添加老虎机动画效果
+        $('#slot-machine').addClass('spinning');
+        
+        // 模拟随机选择过程
+        let spinCount = 0;
+        const spinInterval = setInterval(function() {
+          $('#slot-category').text(categories[Math.floor(Math.random() * categories.length)]);
+          $('#slot-difficulty').text(difficulties[Math.floor(Math.random() * difficulties.length)]);
+          $('#slot-source').text(sources[Math.floor(Math.random() * sources.length)]);
+          spinCount++;
+          
+          if (spinCount >= 10) {
+            clearInterval(spinInterval);
+            
+            // 最终结果
+            $('#slot-category').text(selectedCategory);
+            $('#slot-difficulty').text(selectedDifficulty);
+            $('#slot-source').text(selectedSource);
+            
+            $('#slot-machine').removeClass('spinning');
+            $btn.prop('disabled', false).removeClass('opacity-50');
+            
+            // 显示结果区域
+            $('#result-section').removeClass('hidden');
+            
+            // 滚动到结果区域
+            $('#result-section')[0].scrollIntoView({ behavior: 'smooth' });
+          }
+        }, 100);
+      });
+      
+      // 开始答题按钮点击
+      $('#btn-start-answer').on('click', function() {
+        navPush('question-detail.html?id=1');
+      });
+      
+      // 重新抽取按钮点击
+      $('#btn-retry').on('click', function() {
+        $('#result-section').addClass('hidden');
+        // 滚动回老虎机区域
+        $('#slot-machine')[0].scrollIntoView({ behavior: 'smooth' });
+      });
+      
+      // TabBar 导航事件绑定
+      $('#nav-home').on('click', function(e) {
+        e.preventDefault();
+        navReset('home.html');
+      });
+      $('#nav-random').on('click', function(e) {
+        e.preventDefault();
+        navReset('random.html');
+      });
+      $('#nav-interview').on('click', function(e) {
+        e.preventDefault();
+        navReset('interview.html');
+      });
+      $('#nav-history').on('click', function(e) {
+        e.preventDefault();
+        navReset('history.html');
+      });
+    });
+  </script>
+  <script>lucide.createIcons();</script>
+</body>
+
+</html>
