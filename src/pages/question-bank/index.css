@@ -1,0 +1,128 @@
+.practice-library-page {
+  position: relative;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at top, rgb(255 251 246), rgb(248 241 234) 36%, rgb(244 236 227) 68%, rgb(240 231 220) 100%);
+}
+
+.practice-library-backdrop {
+  position: absolute;
+  border-radius: 9999px;
+  filter: blur(3.75rem);
+  pointer-events: none;
+}
+
+.practice-library-backdrop--one {
+  top: -4rem;
+  right: -3rem;
+  width: 12rem;
+  height: 12rem;
+  background: rgb(235 183 132 / 20%);
+}
+
+.practice-library-backdrop--two {
+  top: 18rem;
+  left: -4rem;
+  width: 11rem;
+  height: 11rem;
+  background: rgb(201 111 61 / 10%);
+}
+
+.practice-library-panel {
+  border: 1px solid rgb(201 111 61 / 10%);
+  border-radius: 1.75rem;
+  background: linear-gradient(180deg, rgb(255 255 255 / 95%), rgb(251 246 240 / 90%));
+  box-shadow:
+    inset 0 0.08rem 0.35rem rgb(255 255 255 / 70%),
+    0 1rem 2.2rem rgb(126 88 60 / 10%);
+}
+
+.practice-library-panel--soft {
+  background: linear-gradient(180deg, rgb(255 255 255 / 94%), rgb(248 243 236 / 88%));
+}
+
+.practice-library-chip {
+  border: 1px solid rgb(201 111 61 / 10%);
+  background: rgb(255 255 255 / 74%);
+  color: rgb(110 85 66);
+  box-shadow: inset 0 0.06rem 0.16rem rgb(255 255 255 / 36%);
+}
+
+.practice-library-chip--active {
+  border-color: rgb(201 111 61 / 22%);
+  background: linear-gradient(180deg, rgb(201 111 61 / 20%), rgb(201 111 61 / 12%));
+  color: rgb(201 111 61);
+}
+
+.practice-library-question-card {
+  border: 1px solid rgb(201 111 61 / 10%);
+  border-radius: 1.5rem;
+  background:
+    radial-gradient(circle at top right, rgb(244 197 154 / 16%), transparent 30%),
+    linear-gradient(180deg, rgb(255 255 255 / 96%), rgb(250 245 238 / 90%));
+  box-shadow:
+    inset 0 0.08rem 0.35rem rgb(255 255 255 / 74%),
+    0 0.9rem 1.8rem rgb(143 104 75 / 8%);
+}
+
+.practice-library-upload-button {
+  border: 1px solid rgb(201 111 61 / 18%);
+  background: linear-gradient(180deg, rgb(208 120 67), rgb(192 104 52));
+  box-shadow: 0 0.75rem 1.4rem rgb(201 111 61 / 18%);
+}
+
+.practice-library-upload-button--compact {
+  box-shadow: 0 0.45rem 1rem rgb(201 111 61 / 14%);
+}
+
+.practice-library-drawer {
+  left: 0.75rem;
+  right: 0.75rem;
+  bottom: 0.75rem;
+}
+
+.practice-library-drawer-sheet {
+  max-height: 85vh;
+  overflow: auto;
+  border: 1px solid rgb(201 111 61 / 10%);
+  border-radius: 1.75rem 1.75rem 1.25rem 1.25rem;
+  background:
+    radial-gradient(circle at top right, rgb(244 197 154 / 16%), transparent 26%),
+    linear-gradient(180deg, rgb(255 255 255 / 98%), rgb(249 244 237 / 96%));
+  box-shadow: 0 1rem 2.4rem rgb(126 88 60 / 16%);
+}
+
+.practice-library-tab-list {
+  border: 1px solid rgb(201 111 61 / 10%);
+  background: rgb(247 239 231 / 80%);
+}
+
+.practice-library-tab-trigger {
+  color: rgb(125 94 69);
+}
+
+.practice-library-preview-card {
+  border: 1px solid rgb(201 111 61 / 8%);
+  border-radius: 1.25rem;
+  background: linear-gradient(180deg, rgb(255 255 255 / 88%), rgb(246 240 233 / 82%));
+  padding: 1rem;
+}
+
+.practice-library-batch-tip {
+  border: 1px dashed rgb(201 111 61 / 18%);
+  border-radius: 1rem;
+  background: rgb(255 255 255 / 68%);
+  padding: 0.9rem 1rem;
+}
+
+.practice-library-drawer-footer {
+  position: sticky;
+  bottom: 0;
+  background: linear-gradient(180deg, rgb(249 244 237 / 80%), rgb(249 244 237 / 98%));
+  backdrop-filter: blur(0.5rem);
+}
+
+.practice-library-drawer-secondary {
+  border: 1px solid rgb(201 111 61 / 10%);
+  background: rgb(255 255 255 / 80%);
+}

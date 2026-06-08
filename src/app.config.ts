@@ -1,7 +1,9 @@
 export default defineAppConfig({
   pages: [
     'pages/index/index',
-    'pages/interview/index'
+    'pages/interview/index',
+    'pages/question-bank/index',
+    'pages/history/index'
   ],
   window: {
     backgroundTextStyle: 'light',

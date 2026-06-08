@@ -10,7 +10,7 @@ dist-*/
 # Misc
 .DS_Store
 .env
-# .env.local
+.env.local
 .env.development.local
 .env.test.local
 .env.production.local
@@ -42,3 +42,7 @@ pnpm-debug.log*
 .cozeproj/reduction
 node-compile-cache/
 .preview
+project.private.config.json
+h5-dev.log
+weapp-dev.log
+$null
